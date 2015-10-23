@@ -30,11 +30,9 @@ private:
     QPixmap m_screen;            //截图
     QPixmap m_tempscreen;        //缓冲区
 
-    QLabel* m_Rectsize;         //截屏大小显示标签
-    QLabel* m_Func;             //截屏后功能选择标签
-
     int m_screenwidth;          //整个屏幕的宽度
     int m_screenheight;         //整个屏幕的高度
+    QRect m_selectedsize;       //选区范围
     bool m_isDrawing;           //是否在画
     bool m_selected;            //是否选中
 

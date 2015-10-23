@@ -10,9 +10,11 @@
 ScreenWidget::ScreenWidget(QWidget *parent) :
     QWidget(parent)
 {
-    Init();
+    Init();  
     m_isDrawing = false;
     m_selected = false;
+    m_beginPos = QPoint(0,0);
+    m_endPos = QPoint(QApplication::desktop()->width(),QApplication::desktop()->height());
     setWindowFlags(Qt::WindowStaysOnTopHint);
 }
 
@@ -44,7 +46,6 @@ void ScreenWidget::Init() //初始化菜单
     trayicon->show();       //显示托盘
     trayicon->setToolTip(tr("截图工具"));
     //trayicon->showMessage(tr("Yoooo~~~"), tr("莫慌，有我"), QSystemTrayIcon::Information, 5000);
-    qDebug() << "初始化完成" ;
 }
 
 void ScreenWidget::closeEvent(QCloseEvent *event)       //关闭事件
@@ -57,7 +58,6 @@ void ScreenWidget::closeEvent(QCloseEvent *event)       //关闭事件
     delete a_exit;
     delete trayicon;
     delete traymenu;
-    qDebug() << "关闭";
     event->accept();
 }
 
@@ -72,7 +72,15 @@ void ScreenWidget::paintEvent(QPaintEvent *event)
 {
     QPainter painter(this);
     painter.drawPixmap(0, 0, m_tempscreen);
-    //QDialog::paintEvent(event);
+    QPen pen(QColor(0,0,255));
+    pen.setWidth(2);
+    painter.setPen(pen);
+    painter.drawRect(QRectF(m_beginPos,m_endPos));
+
+    painter.setPen(QColor(Qt::black));
+    m_screenwidth = abs(m_endPos.x() - m_beginPos.x());
+    m_screenheight = abs(m_endPos.y() - m_beginPos.y());
+    painter.drawText(0,10,QString("%1x%2").arg(m_screenwidth).arg(m_screenheight));
 }
 
 void ScreenWidget::mousePressEvent(QMouseEvent *event)  //鼠标按下事件
@@ -88,10 +96,7 @@ void ScreenWidget::mouseMoveEvent(QMouseEvent *event)   //鼠标移动事件
     if (m_isDrawing) {
         m_tempscreen = m_screen;
         m_endPos = event->pos();
-        m_screenwidth = abs(m_endPos.x() - m_beginPos.x());
-        m_screenheight = abs(m_endPos.y() - m_beginPos.y());
-        qDebug() << m_screenwidth << "x" << m_screenheight;
-        //paint(m_tempscreen);
+        update();
     }
 }
 
@@ -101,17 +106,29 @@ void ScreenWidget::mouseReleaseEvent(QMouseEvent *event)    //鼠标释放事件
         m_endPos = event->pos();
         if(m_beginPos == m_endPos)
         {
-            QApplication::clipboard()->setImage(m_tempscreen.toImage());
+            QPixmap pix = m_screen.grabWidget(this,m_selectedsize.x(),m_selectedsize.y(),m_selectedsize.width(),m_selectedsize.height());
+            QApplication::clipboard()->setImage(pix.toImage());
+            m_selected = false;
+            m_beginPos = QPoint(0,0);
+            m_endPos = QPoint(QApplication::desktop()->width(),QApplication::desktop()->height());
             hide();
         }
         m_isDrawing = false;
         m_selected = true;
-        //shotRect = QRect(m_beginPos, m_endPos);
-        //paint(m_tempscreen);
+        m_selectedsize = QRect(m_beginPos,m_endPos);
         //savePixMap();
     }
     else if(event->button() == Qt::RightButton){
-        hide();
+        if(m_selected)
+        {
+            m_selected = false;
+            m_tempscreen = m_screen;
+            m_beginPos = QPoint(0,0);
+            m_endPos = QPoint(QApplication::desktop()->width(),QApplication::desktop()->height());
+            update();
+        }
+        else
+            hide();
     }
 }
 
@@ -121,7 +138,6 @@ void ScreenWidget::BeginScreenShot()    //开始截图
     m_screen = QPixmap::grabWindow(QApplication::desktop()->winId());
     m_tempscreen = m_screen;
     show();
-    qDebug() << "开始截图" ;
 }
 
 
