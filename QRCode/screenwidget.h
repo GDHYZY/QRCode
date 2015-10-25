@@ -2,13 +2,13 @@
 #define SCREENWIDGET_H
 
 #include <QWidget>
-#include <QPixmap>
-#include <QPoint>
-#include <QLabel>
-#include <QMenu>
 #include <QSystemTrayIcon>
 #include <QRubberBand>
+#include <QAction>
+#include <QMenu>
 #include <QMouseEvent>
+#include <windows.h>
+#include "MyGlobalShortCut.h"
 
 class ScreenWidget : public QWidget
 {
@@ -31,12 +31,13 @@ private:
     QPoint m_beginPos;           //起始点
     QPoint m_endPos;             //终点
     QPixmap m_screen;            //截图
+    MyGlobalShortCut* m_shortcut;//全局热键
 
     bool m_isDrawing;           //是否在画
     bool m_selected;            //是否选中
     bool leftMousePress;        //左键按下
 
-public slots:
+private slots:
     void BeginScreenShot();     //开始截图
     void SaveScreenShot();      //保存截图
     void GetScreenShot();       //完成截图

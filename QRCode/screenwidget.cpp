@@ -1,12 +1,12 @@
 #include "screenwidget.h"
-#include <QDialog>
-#include <QPainter>
+#include "QZXing.h"
 #include <QApplication>
 #include <QDesktopWidget>
-#include <QMessageBox>
+#include <QDesktopServices>
+#include <QPainter>
 #include <QFileDialog>
 #include <QClipboard>
-#include <QDebug>
+
 
 ScreenWidget::ScreenWidget(QWidget *parent) :
     QWidget(parent)
@@ -41,12 +41,14 @@ void ScreenWidget::InitWdiget()     //初始化变量
     traymenu->addAction(a_exit);
     trayicon->show();       //显示托盘
     trayicon->setToolTip(tr("截图工具"));
-    //trayicon->showMessage(tr("Yoooo~~~"), tr("莫慌，有我"), QSystemTrayIcon::Information, 5000);
+    trayicon->showMessage(tr("Yoooo~~~"), tr("Alt+Q开始截图"), QSystemTrayIcon::Information, 1000);
     m_rubberband->addAction(a_get);
     m_rubberband->addAction(a_save);
     m_rubberband->addAction(a_cancel);
     m_rubberband->addAction(a_search);
     m_rubberband->setContextMenuPolicy(Qt::ActionsContextMenu);
+    /*————————————————————————————————————————————————————————————————————————————————————-*/
+    m_shortcut = new MyGlobalShortCut("alt+q",this);
 }
 
 void ScreenWidget::InitConnect() //初始化槽
@@ -56,7 +58,8 @@ void ScreenWidget::InitConnect() //初始化槽
     connect(a_save,SIGNAL(triggered()),this,SLOT(SaveScreenShot()));
     connect(a_cancel,SIGNAL(triggered()),this,SLOT(CancelScreenShot()));
     connect(a_search,SIGNAL(triggered()),this,SLOT(SearchCode()));
-    connect(a_exit,SIGNAL(triggered()),this,SLOT(close()));   
+    connect(a_exit,SIGNAL(triggered()),this,SLOT(close()));
+    connect(m_shortcut,SIGNAL(activated()),this,SLOT(BeginScreenShot()));
 }
 
 bool ScreenWidget::eventFilter(QObject *o, QEvent *e)       //rubberband点击事件
@@ -115,6 +118,7 @@ void ScreenWidget::closeEvent(QCloseEvent *event)       //关闭事件
     delete trayicon;
     delete traymenu;
     delete m_rubberband;
+    delete m_shortcut;
     event->accept();
 }
 
@@ -244,7 +248,14 @@ void ScreenWidget::CancelScreenShot() //取消截图
 
 void ScreenWidget::SearchCode() //扫描二维码
 {
-    qDebug() << "扫描二维码" ;
+    QZXing qzxing;
+    QString s = qzxing.decodeImage(m_screen.grabWidget(
+               this,m_rubberband->x(),m_rubberband->y(),m_rubberband->width(),m_rubberband->height()).toImage());
+    if("" != s)
+    {
+        GetScreenShot();
+        QDesktopServices::openUrl(QUrl(s));
+    }
 }
 
 

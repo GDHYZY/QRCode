@@ -14,14 +14,18 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    screenwidget.cpp
+    screenwidget.cpp \
+    MyGlobalShortCut.cpp \
+    MyWinEventFilter.cpp
 
 HEADERS  += \
-    screenwidget.h
+    screenwidget.h \
+    MyGlobalShortCut.h \
+    MyWinEventFilter.h
 
 FORMS    +=
 
 OTHER_FILES +=
 
 RESOURCES += \
-    Resources.qrc
+    Resourse.qrc
