@@ -10,18 +10,16 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = QRCode
 include(./QZXing/QZXing.pri)
+include(./QxtGlobalShortCut/qxtglobalshortcut.pri)
+
 TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    screenwidget.cpp \
-    MyGlobalShortCut.cpp \
-    MyWinEventFilter.cpp
+    screenwidget.cpp
 
 HEADERS  += \
-    screenwidget.h \
-    MyGlobalShortCut.h \
-    MyWinEventFilter.h
+    screenwidget.h
 
 FORMS    +=
 

@@ -8,14 +8,14 @@
 #include <QMenu>
 #include <QMouseEvent>
 #include <windows.h>
-#include "MyGlobalShortCut.h"
+#include "qxtglobalshortcut.h"
 
 class ScreenWidget : public QWidget
 {
     Q_OBJECT
 public:
     explicit ScreenWidget(QWidget *parent = 0);
-
+    ~ScreenWidget();
 private:
     QAction* a_begin;           //截屏
     QAction* a_get;             //完成
@@ -31,7 +31,7 @@ private:
     QPoint m_beginPos;           //起始点
     QPoint m_endPos;             //终点
     QPixmap m_screen;            //截图
-    MyGlobalShortCut* m_shortcut;//全局热键
+    QxtGlobalShortcut* m_shortcut;//全局热键
 
     bool m_isDrawing;           //是否在画
     bool m_selected;            //是否选中
@@ -49,7 +49,6 @@ private:
 
 protected:
     virtual bool eventFilter(QObject *o, QEvent *e);    //触发事件
-    void closeEvent(QCloseEvent* event);                //关闭事件
     void showEvent(QShowEvent* event);                  //显示事件
     void paintEvent(QPaintEvent* event);                //绘图事件
     void mousePressEvent(QMouseEvent *event);           //鼠标按下事件

@@ -16,6 +16,21 @@ ScreenWidget::ScreenWidget(QWidget *parent) :
     m_rubberband->installEventFilter(this);
     setWindowFlags(Qt::WindowStaysOnTopHint);
 }
+
+ScreenWidget::~ScreenWidget()
+{
+    hide();
+    delete a_begin;
+    delete a_get;
+    delete a_save;
+    delete a_cancel;
+    delete a_search;
+    delete a_exit;
+    delete trayicon;
+    delete traymenu;
+    delete m_rubberband;
+    delete m_shortcut;
+}
 void ScreenWidget::InitWdiget()     //初始化变量
 {
     m_isDrawing = false;
@@ -44,11 +59,11 @@ void ScreenWidget::InitWdiget()     //初始化变量
     trayicon->showMessage(tr("Yoooo~~~"), tr("Alt+Q开始截图"), QSystemTrayIcon::Information, 1000);
     m_rubberband->addAction(a_get);
     m_rubberband->addAction(a_save);
-    m_rubberband->addAction(a_cancel);
     m_rubberband->addAction(a_search);
+    m_rubberband->addAction(a_cancel);
     m_rubberband->setContextMenuPolicy(Qt::ActionsContextMenu);
     /*————————————————————————————————————————————————————————————————————————————————————-*/
-    m_shortcut = new MyGlobalShortCut("alt+q",this);
+    m_shortcut = new QxtGlobalShortcut(QKeySequence("Alt+Q"),this);
 }
 
 void ScreenWidget::InitConnect() //初始化槽
@@ -106,21 +121,6 @@ bool ScreenWidget::eventFilter(QObject *o, QEvent *e)       //rubberband点击�
     return false;
 }
 
-void ScreenWidget::closeEvent(QCloseEvent *event)       //关闭事件
-{
-    hide();
-    delete a_begin;
-    delete a_get;
-    delete a_save;
-    delete a_cancel;
-    delete a_search;
-    delete a_exit;
-    delete trayicon;
-    delete traymenu;
-    delete m_rubberband;
-    delete m_shortcut;
-    event->accept();
-}
 
 void ScreenWidget::showEvent(QShowEvent *event)
 {
